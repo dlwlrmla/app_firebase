@@ -1,13 +1,24 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from "styled-components"
 import Contacto from './Contacto'
+import db from "../firebase/firebaseConfig"
+import { getDoc, getDocs, collection } from 'firebase/firestore'
 
 const ListaContactos = () => {
 
-const [contactos, setContactos ] = useState([
-    {id:1, nombre:"Carlos", correo:"correo"},
-    {id:2, nombre:"Arturo", correo:"correo2"}
-])
+const [contactos, setContactos ] = useState([])
+
+useEffect(()=> {
+    const obtenerDatos = async () => {
+        const datos  = await getDocs(collection(db,"usuarios"))
+        console.log(datos.docs[0].data())
+        const contacts = []
+        setContactos(datos.docs.map((documento) => {
+            return {...documento.data(),id:documento.id}
+        }))
+    }
+    obtenerDatos()
+},[contactos])
 
   return (
       contactos.length > 0 &&

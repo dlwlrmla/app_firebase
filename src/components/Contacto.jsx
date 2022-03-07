@@ -1,20 +1,49 @@
 import React, { useState } from 'react'
 import styled from "styled-components"
-
+import db from "../firebase/firebaseConfig"
+import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 
 
 const Contacto = ({nombre,correo,id}) => {
 
 const [editando, setEditando] = useState(false)
+const [nuevoNombre, setNuevoNombre] = useState(nombre)
+const [nuevoCorreo, setNuevoCorreo] = useState(correo)
+
+const Actualizar = async (e) => {
+    e.preventDefault()
+
+    const taskDocRef = doc(db,"usuarios",id)
+    try{
+        await updateDoc(taskDocRef, {
+            nombre:nuevoNombre,
+            correo: nuevoCorreo
+        })
+        onclose()
+    }catch(err){
+        console.log(err)
+    }
+
+    setEditando(false)
+}
+
+const eliminarContacto = async (e) => {
+    const taskDocRef  = doc(db,"usuarios",id)
+    try{
+        await deleteDoc(taskDocRef)
+    }catch(err){
+        alert(err)
+    }
+}
 
   return (
     <ContenedorContacto>
         {editando ? 
-        <form  >
+        <form onSubmit={Actualizar} >
             <Input
             type="text" nombre="nombre" 
-            placeholder="nombre"></Input>
-            <Input
+            placeholder="nombre" value={nuevoNombre} onChange={(e) => setNuevoNombre(e.target.value)}></Input>
+            <Input value={nuevoCorreo} onChange={(e) => setNuevoCorreo(e.target.value)}
             type="text" nombre="correo" 
             placeholder="correo"></Input>
         <Boton type="submit">Actualizar</Boton>
@@ -23,7 +52,7 @@ const [editando, setEditando] = useState(false)
                 <Nombre>{nombre}</Nombre>
                 <Correo>{correo}</Correo>
                 <Boton onClick={()=>setEditando(!editando)}>Editar</Boton>
-                <Boton>Borrar</Boton>
+                <Boton onClick={()=> eliminarContacto(id)}>Borrar</Boton>
             </>
         }
     </ContenedorContacto>
