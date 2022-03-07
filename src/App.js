@@ -1,25 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react'
+import styled from "styled-components"
+import Formulario from './components/Formulario';
+import { collection, getDocs } from "firebase/firestore"
+import db from "./firebase/firebaseConfig"
+import ListaContactos from './components/ListaContactos';
 
-function App() {
+const App = () => {
+
+useEffect (()=> {
+  const obtenerDatos = async() => {
+    const datos = await getDocs(collection(db, "usuarios"))
+    console.log(datos.docs[0].data())
+  }
+  obtenerDatos()
+ 
+
+},[])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <Contenedor>
+        <Titulo>Lista de Contactos</Titulo>
+        <Formulario/>
+        <ListaContactos/>
+    </Contenedor>
+  )
 }
-
-export default App;
+const Contenedor = styled.div`
+    margin: 40px;
+    width: 90%;
+    max-width: 400px;
+    background: #fff;
+    padding: 40px;
+    border-radius: 5px;
+    text-align: center;
+`;
+ 
+const Titulo = styled.h2`
+    margin-bottom: 10px;
+`;
+export default App
